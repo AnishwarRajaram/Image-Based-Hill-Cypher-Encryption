@@ -194,7 +194,7 @@ def block_merge(
             idx += 1
 
     H, W = orig_shape
-    return np.clip(canvas[:H, :W], 0, 255).astype(np.uint8)
+    return canvas[:H, :W]
 
 
 # Single-block encrypt / decrypt
@@ -247,9 +247,17 @@ def encrypt_channel(
     Returns
 
     cipher_channel : (H, W) uint8 array (values in [0, q-1] ⊆ [0,255] for q≤256)
+    
     """
+
     blocks, orig_shape, padded_shape = block_divide(channel, n)
-    enc_blocks = [_encrypt_block(b, K, q, pre) for b in blocks]
+    enc_blocks = []
+    for b in blocks:
+        enc = _encrypt_block(b, K, q, pre)
+        if enc.max() >= q:
+            print(f"WARNING: Block has values >= {q}: min={enc.min()}, max={enc.max()}")
+        enc_blocks.append(enc)
+    
     return block_merge(enc_blocks, orig_shape, padded_shape, n)
 
 

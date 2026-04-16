@@ -10,6 +10,8 @@
 .snapshots/
 #Testing Output folder
 .output/
+#virtual env
+.venv/
 #Extension App-file
 *.app
 #Rapid Application Development File

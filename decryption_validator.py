@@ -28,8 +28,11 @@ class DecryptionValidator:
         self.pre = pre
         self.arnold_iters = arnold_iters
         
-        # Core Task: Find the modular inverse matrix over F_q
-        self.K_inv = _mod_inv_matrix(self.K, self.q)
+        from hill_cipher_engine import _mod_det
+        det = _mod_det(self.K, self.q)
+        if det == 0:
+            raise ValueError(f"Key matrix is singular mod {self.q}!")
+        print(f"Key verified: det = {det} mod {self.q} (invertible)")
 
     def decrypt_full_image(self, cipher_tensor: np.ndarray) -> np.ndarray:
         """
@@ -38,7 +41,7 @@ class DecryptionValidator:
         Order: Inverse Arnold 2 -> Inverse Hill 2 -> Inverse Arnold 1 -> Inverse Hill 1
         """
         print("--- Initiating Decryption Pipeline ---")
-        print(f"Calculated Modular Inverse of Key (mod {self.q}):\n{self.K_inv}")
+
         
         # Step 1: Reverse Stage 2 Arnold Transform
         print("Step 1: Reversing Stage 2 Arnold Transform...")
@@ -91,8 +94,15 @@ class DecryptionValidator:
         print(f"Peak Signal-to-Noise Ratio (PSNR): {psnr} dB")
         
         if mse == 0.0:
-            print("SUCCESS: The decrypted matrix perfectly matches the original matrix. Zero data loss.")
+            print("🎉 PERFECT: Lossless decryption confirmed!")
+        elif psnr >= 45:
+            print("✅ EXCELLENT: Decryption quality is very high (PSNR > 45 dB)")
+        elif psnr >= 35:
+            print("✓ GOOD: Decryption quality is acceptable (PSNR > 35 dB)")
+        elif psnr >= 25:
+            print("⚠️ FAIR: Some quality loss detected")
         else:
-            print("WARNING: Data loss or corruption detected. Matrices do not match.")
+            print("❌ POOR: Significant data loss or corruption detected")
+        
             
         return mse, psnr

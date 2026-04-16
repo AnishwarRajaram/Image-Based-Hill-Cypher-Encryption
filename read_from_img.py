@@ -29,7 +29,7 @@ class PaddedRGBImageLoader:
             raise ValueError("k (key matrix dimension) must be a positive integer.")
         self.k = k
         base = Path(__file__).resolve().parent
-        self.images_dir = Path(images_dir) if images_dir is not None else base / "Images"
+        self.images_dir = Path(images_dir) if images_dir is not None else base / "Images" / "Original"
         self.images_dir = self.images_dir.resolve()
 
         self._tensor: np.ndarray | None = None
@@ -104,10 +104,10 @@ class PaddedRGBImageLoader:
 if __name__ == "__main__":
     import sys
 
-    images_dir = Path(__file__).resolve().parent / "Images"
+    images_dir = Path(__file__).resolve().parent / "Images" / "Original"
     images_dir.mkdir(parents=True, exist_ok=True)
 
-    demo_name = "_hill_demo.png"
+    demo_name = "_hill_demo.jpg"
     demo_path = images_dir / demo_name
     if not demo_path.is_file():
         # Small synthetic RGB image so __main__ runs without a user-provided file
