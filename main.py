@@ -25,7 +25,7 @@ from decryption_validator import DecryptionValidator
 
 # Paths
 INPUT_IMAGE = Path("Images/Original/input.jpg")        # Image to encrypt/decrypt
-OUTPUT_ENCRYPTED = Path("Images/encrypted.png")
+OUTPUT_ENCRYPTED = Path("Images/Encrypted/encrypted.png")
 OUTPUT_DECRYPTED = Path("Images/decrypted.jpg")
 KEY_FILE = Path("Images/key.npy")             # Where to save/load the key
 
@@ -80,6 +80,8 @@ def save_rgb(r, g, b, path):
     """Save RGB channels as PNG."""
     img = np.dstack([r, g, b])
     img = np.clip(img, 0, 255).astype(np.uint8)
+    # Ensure parent directory exists
+    path.parent.mkdir(parents=True, exist_ok=True)
     Image.fromarray(img, mode="RGB").save(path)
     print(f"✓ Saved: {path}")
 
